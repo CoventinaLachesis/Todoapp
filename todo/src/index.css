@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Kanit');
+@import url('https://fonts.googleapis.com/css?family=Sarabun');
+
+body {
+    font-family: 'Kanit';
+}
+
+#page-wrap {
+    padding-top: 0px;
+    padding-left: 0px;
+}

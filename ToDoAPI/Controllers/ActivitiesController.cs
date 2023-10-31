@@ -30,7 +30,7 @@ public class ActivitiesController : ControllerBase
     public IActionResult Get2(uint id)
     {
         var db = new ToDoDbContext();
-        var activity=(from a in db.Activities select a).FirstOrDefault();
+        var activity=db.Activities.Find(id);
         if (activity==null) return NotFound();
         return Ok(activity);
     }

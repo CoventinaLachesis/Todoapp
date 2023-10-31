@@ -19,10 +19,13 @@ public class TokensController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost]
+    
     [Route("")]
+    [HttpPost]
     public IActionResult Post([FromBody] DTOs.Login data)
     {  
+        
+        
         var db= new ToDoDbContext();
         var user =db.Users.Find(data.Id);
         if (user==null)return Unauthorized();
