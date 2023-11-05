@@ -19,12 +19,16 @@ import SaveAlt from '@material-ui/icons/SaveAlt'
 import Search from '@material-ui/icons/Search'
 import ViewColumn from '@material-ui/icons/ViewColumn'
 import { useState, useEffect } from 'react';
-
+import { DateTimePicker} from '@mui/x-date-pickers';
+import {LocalizationProvider} from '@mui/x-date-pickers';
+import {AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import {TextField} from '@mui/material'
 import axios from 'axios'
 import { useCookies } from 'react-cookie'
 
 function Main() {
 
+    
     const tableIcons = {
         Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
         Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -48,7 +52,11 @@ function Main() {
     const [columns, setColumns] = useState([
         { title: 'เลขระเบียน', field: 'id', editable: 'never' },
         { title: 'กิจกรรม', field: 'name' },
-        { title: 'วันเวลา', field: 'when', initialEditValue: 'yyyy-MM-ddTHH:mm:ss' }
+        {
+            title: 'วันเวลา',
+            field: 'when',
+            initialEditValue: 'yyyy-MM-ddTHH:mm:ss'
+          },
     ])
     
     const [data, setData] = useState([])
@@ -86,9 +94,10 @@ function Main() {
                             onRowUpdateCancelled: rowData => { /* do nothing */ },
                             onRowAdd: newData =>
                                 new Promise((resolve, reject) => {
-                                    setTimeout(() => {                                
+                                    setTimeout(() => {  
+                                        console.log(newData.name)                              
                                         axios.post('/activities',
-                                            { name: newData.name, when: newData.when },
+                                            { name: newData.name, when: newData.when},
                                             { headers: { Authorization: 'Bearer ' + cookies['token'] }, timeout: 10 * 1000 }
                                         ).then((response) => {                                    
                                             newData.id = response.data.id

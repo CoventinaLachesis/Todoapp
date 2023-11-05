@@ -13,6 +13,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+                      policy  =>
+                      {
+                          policy.WithOrigins("http://localhost:3000").AllowAnyHeader()
+                       .AllowAnyMethod();
+                      });
+});
+
 builder.Services.AddAuthentication(options=>{
     options.DefaultAuthenticateScheme=JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme=JwtBearerDefaults.AuthenticationScheme;
@@ -32,7 +42,6 @@ options.TokenValidationParameters=new Microsoft.IdentityModel.Tokens.TokenValida
 
 });
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -48,7 +57,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseCors();
 app.Run();
 
 

@@ -18,12 +18,26 @@ public class ActivitiesController : ControllerBase
     [Route("")]
     [Authorize(Roles ="user")]
     public IActionResult Get()
-    {   var db = new ToDoDbContext();
+    {   
+        var db = new ToDoDbContext();
     var activities = from a in db.Activities select a;
     if (!activities.Any()) return NoContent(); 
     return Ok(activities);
 
     }
+    [HttpPost]
+        public IActionResult Post([FromBody] DTOs.Activity data)
+        {   Console.WriteLine("Success");
+            var db = new ToDoDbContext();
+            var activity= new Models.Activity();
+            activity.Name =data.Name;
+            activity.When=data.When;
+
+            db.Activities.Add(activity);
+            db.SaveChanges();
+            return Ok(activity);
+        }
+
 
     [Route("{id}")]
     [HttpGet]
@@ -35,19 +49,8 @@ public class ActivitiesController : ControllerBase
         return Ok(activity);
     }
 
-    [HttpPost]
-    public IActionResult Post([FromBody] DTOs.Activity data)
-    {
-        var db = new ToDoDbContext();
-        var activity= new Models.Activity();
-        activity.Name =data.Name;
-        activity.When=data.When;
-
-        db.Activities.Add(activity);
-        db.SaveChanges();
-        return Ok();
-    }
-    [HttpPut]
+    
+    [HttpPut("{id}")]
     public IActionResult Put(uint id,[FromBody] DTOs.Activity data)
     {
         var db = new ToDoDbContext();
@@ -59,16 +62,21 @@ public class ActivitiesController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete]
-    public IActionResult Delete(uint id)
-    {
-        var db = new ToDoDbContext();
-        var activity= db.Activities.Find(id);
+    [HttpDelete("{id}")]
+public IActionResult Delete(uint id)
+{
+    var db = new ToDoDbContext();
+    var activity = db.Activities.Find(id);
 
-        db.Activities.Remove(activity);
-        db.SaveChanges();
-        return Ok();
+    if (activity == null)
+    {
+        return NotFound();
     }
+
+    db.Activities.Remove(activity);
+    db.SaveChanges();
+    return Ok();
+}
 
 
 }

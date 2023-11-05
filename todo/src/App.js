@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import { Routes, Route } from 'react-router-dom'
 import axios from 'axios'
 
@@ -7,10 +6,10 @@ import Main from './Main'
 import Credit from './Credit'
 import SignOut from './SignOut'
 function App() {
-   axios.defaults.baseURL = 'http://localhost:7000'
+   axios.defaults.baseURL = 'https://localhost:7164'
   return (
     <Routes>
-        <Route path="/" element={<Main/>}/>
+        <Route path="/" element={<SignIn/>}/>
         <Route path="/signin" element={<SignIn/>}/>
         <Route path="/main" element={<Main/>}/>
         <Route path="/credit" element={<Credit/>}/>

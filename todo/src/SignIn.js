@@ -41,7 +41,7 @@ function SignIn() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      email: data.get('email'),
+      Id: data.get('Id'),
       password: data.get('password'),
     });
   };
@@ -74,10 +74,10 @@ function SignIn() {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="Id"
+              label="Id Address"
+              name="Id"
+              autoComplete="Id"
               autoFocus
               value={id}
               onChange={(event)=>setId(event.target.value)}
@@ -104,8 +104,8 @@ function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               onClick={()=>{
-                axios.post('/tokens',
-                    { id: id, password: password },
+                axios.post('/Tokens',
+                    { Id: id, Password: password },
                     { headers: { /* Authorization: 'Bearer ' + token */ }, timeout: 10 * 1000 }
                 ).then((response) => {
                     setCookie('token', response.data.token)

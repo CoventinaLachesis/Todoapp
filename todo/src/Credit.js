@@ -7,7 +7,7 @@ function Credit() {
             <div id="page-wrap">
                 <center>
                     <h3>จัดทำโดย</h3>
-                    <h1>ชัชวิทย์ อาภรณ์เทวัญ</h1>
+                    <h1>XXX YYY</h1>
                 </center>
             </div>
         </div>
