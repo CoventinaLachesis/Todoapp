@@ -27,7 +27,7 @@ public class ActivitiesController : ControllerBase
     }
     [HttpPost]
         public IActionResult Post([FromBody] DTOs.Activity data)
-        {   Console.WriteLine("Success");
+        {   
             var db = new ToDoDbContext();
             var activity= new Models.Activity();
             activity.Name =data.Name;

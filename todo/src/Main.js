@@ -1,5 +1,5 @@
 import SideBar from './SideBar'
-
+import * as React from 'react';
 import MaterialTable from 'material-table'
 import { ThemeProvider, createTheme } from '@mui/material';
 import { forwardRef } from 'react';
@@ -25,10 +25,27 @@ import {AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {TextField} from '@mui/material'
 import axios from 'axios'
 import { useCookies } from 'react-cookie'
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import { format, parseISO } from 'date-fns';
+import { th } from 'date-fns/locale';
+import './index.css';
 
 function Main() {
 
-    
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarType , setSnackbarType]=useState("success");
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
+
+    const handleSnackbar = (message,type) => {
+        setSnackbarMessage(message);
+        setSnackbarType(type)
+        setSnackbarOpen(true);
+    };
     const tableIcons = {
         Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
         Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -50,12 +67,25 @@ function Main() {
     }
 
     const [columns, setColumns] = useState([
-        { title: 'เลขระเบียน', field: 'id', editable: 'never' },
         { title: 'กิจกรรม', field: 'name' },
         {
             title: 'วันเวลา',
             field: 'when',
-            initialEditValue: 'yyyy-MM-ddTHH:mm:ss'
+            editComponent: (props) => (
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DateTimePicker
+                    label="Basic date time picker"
+                    selected={props.value || null}
+                    onChange={props.onChange}
+                    // You can add any other props you need here
+                  />
+                </LocalizationProvider>
+              ),
+              render: (rowData) => {
+                const thaiDateFormat = format(parseISO(rowData.when), "dd MMM yy HH:mm", { locale: th });
+
+                return <TextField value={thaiDateFormat} />;
+              },
           },
     ])
     
@@ -79,11 +109,16 @@ function Main() {
         })
 	}, [])
 
+    const customTheme = createTheme({
+        typography: {
+          fontFamily: 'Kanit', // Replace with your desired font-family
+        },
+      });
     return (
         <div id="outer-container">
             <SideBar pageWrapId={'page-wrap'} outerContainerId={'outer-container'}/> 
             <div id="page-wrap">
-                <ThemeProvider theme={defaultMaterialTheme}>
+                <ThemeProvider theme={customTheme}>
                     <MaterialTable
                         icons={tableIcons}
                         title={<h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To Do</h1>}
@@ -103,13 +138,15 @@ function Main() {
                                             newData.id = response.data.id
                                             console.log('debugging!')
                                             console.log('1 = ' + response.data.id)
-                                            console.log('2 = ' + newData)
                                             setData([...data, newData])
+                                            handleSnackbar('Success! Activity added.',"success");
                                         }).catch((error) => {
                                             if (error.code === 'ECONNABORTED') {
                                                 console.log('timeout')
+                                                handleSnackbar('Error Something went wrong.',"error");
                                             } else {
                                                 console.log(error.response.status)
+                                                handleSnackbar('Error Something went wrong.',"error");
                                             }
                                         })
                                         resolve();
@@ -126,11 +163,14 @@ function Main() {
                                             const index = oldData.tableData.id;
                                             dataUpdate[index] = newData;
                                             setData([...dataUpdate]);
+                                            handleSnackbar('Success! Activity Update.','success');
                                         }).catch((error) => {
                                             if (error.code === 'ECONNABORTED') {
                                                 console.log('timeout')
+                                                handleSnackbar('Error Something went wrong.','error');
                                             } else {
                                                 console.log(error.response.status)
+                                                handleSnackbar('Error Something went wrong.','error');
                                             }
                                         })                                
                                         resolve();
@@ -146,11 +186,14 @@ function Main() {
                                             const index = oldData.tableData.id;
                                             dataDelete.splice(index, 1);
                                             setData([...dataDelete]);
+                                            handleSnackbar('Success! Activity Delete.','success');
                                         }).catch((error) => {
                                             if (error.code === 'ECONNABORTED') {
                                                 console.log('timeout')
+                                                handleSnackbar('Error Something went wrong.','error');
                                             } else {
                                                 console.log(error.response.status)
+                                                handleSnackbar('Error Something went wrong.','error');
                                             }
                                         })                                
                                         resolve();
@@ -158,6 +201,19 @@ function Main() {
                                 })                                        
                         }}
                     />
+                    <Snackbar
+      open={snackbarOpen}
+      autoHideDuration={6000}
+      onClose={handleCloseSnackbar}
+    >
+      <Alert
+        onClose={handleCloseSnackbar}
+        severity={snackbarType}
+        variant="filled"
+      >
+        {snackbarMessage}
+      </Alert>
+    </Snackbar>
                 </ThemeProvider>      
             </div>    
       </div>

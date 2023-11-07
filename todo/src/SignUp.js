@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -33,7 +32,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-function SignIn() {
+function SignUp() {
 
   let navigate = useNavigate()
 
@@ -67,7 +66,7 @@ function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Sign Up
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -104,7 +103,7 @@ function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               onClick={()=>{
-                axios.post('/Tokens',
+                axios.post('/Tokens/register',
                     { Id: id, Password: password },
                     { headers: { /* Authorization: 'Bearer ' + token */ }, timeout: 10 * 1000 }
                 ).then((response) => {
@@ -119,7 +118,7 @@ function SignIn() {
                 })
               }}
             >
-              Sign In
+              Sign Up
             </Button>
             <Grid container>
               <Grid item xs>
@@ -128,7 +127,7 @@ function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/signup" variant="body2">
+                <Link href="#" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
@@ -141,4 +140,4 @@ function SignIn() {
   );
 }
 
-export default SignIn
+export default SignUp
