@@ -67,27 +67,37 @@ function Main() {
     }
 
     const [columns, setColumns] = useState([
-        { title: 'กิจกรรม', field: 'name' },
+        { title: "กิจกรรม", field: "name" },
         {
-            title: 'วันเวลา',
-            field: 'when',
-            editComponent: (props) => (
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DateTimePicker
-                    label="Basic date time picker"
-                    selected={props.value || null}
-                    onChange={props.onChange}
-                    // You can add any other props you need here
-                  />
-                </LocalizationProvider>
-              ),
-              render: (rowData) => {
-                const thaiDateFormat = format(parseISO(rowData.when), "dd MMM yy HH:mm", { locale: th });
-
-                return <TextField value={thaiDateFormat} />;
-              },
+          title: "วันเวลา",
+          field: "when",
+          editComponent: (props) => (
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateTimePicker
+                label="Basic date time picker"
+                selected={props.value || null}
+                onChange={props.onChange}
+                // You can add any other props you need here
+              />
+            </LocalizationProvider>
+          ),
+          render: (rowData) => {
+            // Parse the 'rowData.when' value using the appropriate format
+            const parsedDate = parseISO(rowData.when);
+      
+            // Check if the parsed date is a valid Date object
+            if (parsedDate instanceof Date && !isNaN(parsedDate.getTime())) {
+              // Format the parsed date using the Thai locale and the 'dd MMM yy HH:mm' format
+              const thaiDateFormat = format(parsedDate, "dd MMM yy HH:mm", { locale: th });
+      
+              return <TextField value={thaiDateFormat} />;
+            } else {
+              // Return an empty string if the parsed date is not valid
+              return <TextField value="" />;
+            }
           },
-    ])
+        },
+      ]);
     
     const [data, setData] = useState([])
         
@@ -128,30 +138,32 @@ function Main() {
                             onRowAddCancelled: rowData => { /* do nothing */ },
                             onRowUpdateCancelled: rowData => { /* do nothing */ },
                             onRowAdd: newData =>
-                                new Promise((resolve, reject) => {
-                                    setTimeout(() => {  
-                                        console.log(newData.name)                              
-                                        axios.post('/activities',
-                                            { name: newData.name, when: newData.when},
-                                            { headers: { Authorization: 'Bearer ' + cookies['token'] }, timeout: 10 * 1000 }
-                                        ).then((response) => {                                    
-                                            newData.id = response.data.id
-                                            console.log('debugging!')
-                                            console.log('1 = ' + response.data.id)
-                                            setData([...data, newData])
-                                            handleSnackbar('Success! Activity added.',"success");
-                                        }).catch((error) => {
+                                    new Promise((resolve, reject) => {
+                                        setTimeout(() => {
+                                        console.log(newData.name);
+
+                                        axios
+                                            .post('/activities', { name: newData.name, when: newData.when }, { headers: { Authorization: 'Bearer ' + cookies['token'] }, timeout: 10 * 1000 })
+                                            .then((response) => {
+                                            newData.id = response.data.id;
+                                            newData.when = response.data.when; // Update 'when' property with server response
+                                            console.log('debugging!');
+                                            setData([...data, newData]);
+                                            handleSnackbar('Success! Activity added.', 'success');
+                                            })
+                                            .catch((error) => {
                                             if (error.code === 'ECONNABORTED') {
-                                                console.log('timeout')
-                                                handleSnackbar('Error Something went wrong.',"error");
+                                                console.log('timeout');
+                                                handleSnackbar('Error Something went wrong.', 'error');
                                             } else {
-                                                console.log(error.response.status)
-                                                handleSnackbar('Error Something went wrong.',"error");
+                                                console.log(error.response.status);
+                                                handleSnackbar('Error Something went wrong.', 'error');
                                             }
-                                        })
+                                            });
+
                                         resolve();
-                                    }, 1000);
-                                }),
+                                        }, 1000);
+                                    }),
                             onRowUpdate: (newData, oldData) =>
                                 new Promise((resolve, reject) => {
                                     setTimeout(() => {
